@@ -27,7 +27,7 @@ def xor(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     if (encrypt):
         message_bytes = little_endian(message_bytes)
 
-    if encrypt and not block_mode:
+    if not block_mode and (len(message_bytes) != len(key_bytes)):
         message_bytes = pad_message(message_bytes, len(key_bytes))
 
     result_bytes = xor_encrypt_decrypt(message_bytes, key_bytes)
