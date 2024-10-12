@@ -26,12 +26,13 @@ def block_mode(args, algo):
 
 def stream_mode(args, algo):
     while True:
-        data = sys.stdin.read(len(hex_to_bytes(args.KEY)))
+        data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1))
+        print(data, "==", len(hex_to_bytes(string_to_hex(data))))
+        if not data:
+            break
         if(not args.check_message_encoding(data)):
             print("Invalid message encoding.", file=sys.stderr)
             return 84
-        if not data:
-            break
         print(algo(data, args.KEY, args.mode == '-c', args.block_mode))
     return 0
 
@@ -41,7 +42,10 @@ def main():
     args = pgpArgs()
     if (args.fail):
         return 84
-    algo = xor if (args.crypto_system == "xor") else xor
+    algo = xor if (args.crypto_system == "xor") else None
+    if (algo == None):
+        print("We currently dont manage this algo.", file=sys.stderr)
+        return 0
     if (args.block_mode):
         if (block_mode(args, algo) != 0):
             return 84
