@@ -15,7 +15,6 @@ class pgpArgs():
         self.MODE = None
         self.OPT_b = None
         self.KEY = None
-        self.MESSAGE = None
         self.g1 = None
         self.g2 = None
         if (not self.parseArgs()):
@@ -23,35 +22,35 @@ class pgpArgs():
 
     def parseArgs(self):
         if (len(sys.argv) < 3):
-            print("Lack of arguments given.")
+            print("Lack of arguments given.", file=sys.stderr)
             return False
         self.CRYPTO_SYSTEM = sys.argv[1]
         if (self.CRYPTO_SYSTEM not in self.valid_systems):
-            print("Invalid crypto system.")
+            print("Invalid crypto system.", file=sys.stderr)
             return False
         self.MODE = sys.argv[2]
         if (self.MODE != "-c" and self.MODE != "-d" and self.MODE != "-g"):
-            print("Invalid mode.")
+            print("Invalid mode.", file=sys.stderr)
             return False
         if (self.MODE == "-g" and (len(sys.argv) < 5 or self.CRYPTO_SYSTEM != "rsa")):
-            print("-g issue.")
+            print("-g issue.", file=sys.stderr)
             return False
-        if (self.MODE != "-g"):
-            self.MESSAGE = input("")
-            if (not self.MESSAGE):
-                print("No message given.")
-                return False
+        # if (self.MODE != "-g"):
+        #     self.MESSAGE = input("")
+        #     if (not self.MESSAGE):
+        #         print("No message given.")
+        #         return False
         if (self.MODE == "-g"):
             self.g1 = sys.argv[3]
             self.g2 = sys.argv[4]
         if (self.MODE == "-c" or self.MODE == "-d"):
             if len(sys.argv) < 4:
-                print("No key given.")
+                print("No key given.", file=sys.stderr)
                 return False
         if (sys.argv[3] == "-b"):
             self.OPT_b = True
             if (self.CRYPTO_SYSTEM == "rsa"):
-                print("Invalid option.")
+                print("Invalid option.", file=sys.stderr)
                 return False
         if (self.MODE != "-g"):
             self.KEY = sys.argv[4] if (self.OPT_b) else sys.argv[3]
