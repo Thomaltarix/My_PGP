@@ -27,7 +27,6 @@ def block_mode(args, algo):
 def stream_mode(args, algo):
     while True:
         data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1))
-        print(data, "==", len(hex_to_bytes(string_to_hex(data))))
         if not data:
             break
         if(not args.check_message_encoding(data)):
