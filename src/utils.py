@@ -16,3 +16,18 @@ def bytes_to_hex(byte_data) -> str:
 
 def little_endian(data : bytes) -> bytes:
     return data[::-1]
+
+def hex_to_int(hex_str) -> int:
+    return int(hex_str, 16)
+
+def int_to_hex(int_str) -> str:
+    return hex(int_str)
+
+def int_to_bytes(int_str) -> bytes:
+    return int_str.to_bytes((int_str.bit_length() + 7) // 8, 'big')
+
+def bytes_to_int(byte_data) -> int:
+    return int.from_bytes(byte_data, 'big')
+
+def bytes_to_string(byte_data) -> str:
+    return byte_data.decode(errors='ignore')
