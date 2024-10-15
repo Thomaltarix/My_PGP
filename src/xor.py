@@ -24,7 +24,7 @@ def xor(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
 
     message_bytes = hex_to_bytes(string_to_hex(message)) if encrypt else hex_to_bytes(message)
 
-    if (encrypt):
+    if encrypt:
         message_bytes = little_endian(message_bytes)
 
     if not block_mode and (len(message_bytes) != len(key_bytes)):
@@ -32,7 +32,7 @@ def xor(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
 
     result_bytes = xor_encrypt_decrypt(message_bytes, key_bytes)
 
-    if (not encrypt):
+    if not encrypt:
         result_bytes = little_endian(result_bytes)
 
     return bytes_to_hex(result_bytes) if encrypt else result_bytes.decode(errors='ignore').rstrip('\x00')
