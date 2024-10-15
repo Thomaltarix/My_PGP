@@ -5,9 +5,11 @@
 # File description:
 # Main
 #
+import src.rsa
 from src.help import display_help
 from src.parse import pgpArgs
 from src.xor import xor
+from src.rsa import rsa
 from src.utils import *
 import sys
 
@@ -26,7 +28,7 @@ def block_mode(args, algo):
 
 def stream_mode(args, algo):
     while True:
-        data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1))
+        data = sys.stdin.read().strip()
         if not data:
             break
         if not args.check_message_encoding(data):
@@ -41,13 +43,20 @@ def main():
     args = pgpArgs()
     if args.fail:
         return 84
-    algo = xor if (args.crypto_system == "xor") else None
-    if (algo == None):
+    if args.crypto_system == "xor":
+        algo = xor
+    elif args.crypto_system == "rsa":
+        algo = rsa
+    else:
+        algo = None
+
     if algo is None:
         print("We currently dont manage this algo.", file=sys.stderr)
         return 0
     if args.mode == "-g":
         return src.rsa.generateKeys(args.g1, args.g2)
+    if args.block_mode:
+        if block_mode(args, algo) != 0:
             return 84
     else:
         if stream_mode(args, algo) != 0:
