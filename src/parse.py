@@ -20,7 +20,7 @@ class pgpArgs():
         self.g2 = None
         self.key_bytes = None
         self.message_bytes = None
-        if (not self.parseArgs()):
+        if not self.parseArgs():
             self.fail = True
 
     def check_message_encoding(self, message):
@@ -33,23 +33,26 @@ class pgpArgs():
 
     def check_key_encoding(self):
         try:
-            self.key_bytes = hex_to_bytes(self.KEY)
+            if not self.crypto_system == "rsa":
+                self.key_bytes = hex_to_bytes(self.KEY)
+            else:
+                self.key_bytes = self.KEY
         except:
             self.fail = True
 
     def parseArgs(self):
-        if (len(sys.argv) < 3):
+        if len(sys.argv) < 3:
             print("Lack of arguments given.", file=sys.stderr)
             return False
         self.crypto_system = sys.argv[1]
-        if (self.crypto_system not in self.valid_systems):
+        if self.crypto_system not in self.valid_systems:
             print("Invalid crypto system.", file=sys.stderr)
             return False
         self.mode = sys.argv[2]
-        if (self.mode != "-c" and self.mode != "-d" and self.mode != "-g"):
+        if self.mode != "-c" and self.mode != "-d" and self.mode != "-g":
             print("Invalid mode.", file=sys.stderr)
             return False
-        if (self.mode == "-g" and (len(sys.argv) < 5 or self.crypto_system != "rsa")):
+        if self.mode == "-g" and (len(sys.argv) < 5 or self.crypto_system != "rsa"):
             print("-g issue.", file=sys.stderr)
             return False
         # if (self.mode != "-g"):
@@ -57,20 +60,20 @@ class pgpArgs():
         #     if (not self.MESSAGE):
         #         print("No message given.")
         #         return False
-        if (self.mode == "-g"):
+        if self.mode == "-g":
             self.g1 = sys.argv[3]
             self.g2 = sys.argv[4]
-        if (self.mode == "-c" or self.mode == "-d"):
+        if self.mode == "-c" or self.mode == "-d":
             if len(sys.argv) < 4:
                 print("No key given.", file=sys.stderr)
                 return False
-        if (sys.argv[3] == "-b"):
+        if sys.argv[3] == "-b":
             self.block_mode = True
-            if (self.crypto_system == "rsa"):
+            if self.crypto_system == "rsa":
                 print("Invalid option.", file=sys.stderr)
                 return False
-        if (self.mode != "-g"):
-            self.KEY = sys.argv[4] if (self.block_mode) else sys.argv[3]
+        if self.mode != "-g":
+            self.KEY = sys.argv[4] if self.block_mode else sys.argv[3]
             self.check_key_encoding()
         return True
 
