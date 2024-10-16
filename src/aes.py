@@ -1,3 +1,6 @@
+from ast import List
+
+
 sbox = [
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -78,7 +81,6 @@ def ShiftRows():
 def miniXor(word1,word2):
     return [word1[i] ^ word2[i] for i in range(0, len(word1))]
 
-
 def printLine(line):
     print(f"here it is : {line[0]:x} {line[0+1]:x} {line[0+2]:x} {line[0+3]:x}")
 
@@ -86,26 +88,29 @@ def printTab(keymatrix):
     for i in range(0, len(keymatrix), 4):
             print(f"{keymatrix[i]:x} {keymatrix[i+1]:x} {keymatrix[i+2]:x} {keymatrix[i+3]:x}")
 
-def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
+def keyExpansion(key : List):
     global rcon
-    keyinit = [
-        0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
-    ]
+
     for i in range(0,10):
         for i in range(0,4):
-            newline = keyinit[len(keyinit) - 4: len(keyinit) + 1] #take previous col
+            newline = key[len(key) - 4: len(key) + 1] #take previous col
             if (i == 0):
                 newline = RotWord(newline)
                 newline = SubBytes(newline)
                 rConCol = rcon[0:4]
                 rcon = rcon[4:]
                 newline = miniXor(newline, rConCol)
-
-            wL4 = keyinit[len(keyinit) - 16: len(keyinit) - 12]
+            wL4 = key[len(key) - 16: len(key) - 12]
             newline = miniXor(newline, wL4)
-            print("line:")
-            printLine(newline)
-            keyinit += newline
+            key += newline
+    return key
+
+def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
+    global rcon
+    keyinit = [
+        0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
+    ]
+    keyinit = keyExpansion(keyinit)
 
     print(len(keyinit))
 
