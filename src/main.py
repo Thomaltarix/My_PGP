@@ -8,6 +8,7 @@
 from src.help import display_help
 from src.parse import pgpArgs
 from src.xor import xor
+from src.aes import aes
 from src.utils import *
 import sys
 
@@ -41,7 +42,9 @@ def main():
     args = pgpArgs()
     if (args.fail):
         return 84
-    algo = xor if (args.crypto_system == "xor") else None
+    algo = None
+    if args.crypto_system == "xor" : algo = xor
+    if args.crypto_system == "aes" : algo = aes
     if (algo == None):
         print("We currently dont manage this algo.", file=sys.stderr)
         return 0
