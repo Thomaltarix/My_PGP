@@ -91,20 +91,23 @@ def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     keyinit = [
         0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
     ]
-    for i in range(0,4):
-        newline = keyinit[len(keyinit) - 4: len(keyinit) + 1] #take previous col
-        if (i == 0):
-            newline = RotWord(newline)
-            newline = SubBytes(newline)
-            rConCol = rcon[0:4]
-            rcon = rcon[4:]
-            newline = miniXor(newline, rConCol)
+    for i in range(0,10):
+        for i in range(0,4):
+            newline = keyinit[len(keyinit) - 4: len(keyinit) + 1] #take previous col
+            if (i == 0):
+                newline = RotWord(newline)
+                newline = SubBytes(newline)
+                rConCol = rcon[0:4]
+                rcon = rcon[4:]
+                newline = miniXor(newline, rConCol)
 
-        wL4 = keyinit[len(keyinit) - 16: len(keyinit) - 12]
-        newline = miniXor(newline, wL4)
-        print("line:")
-        printLine(newline)
-        keyinit += newline
+            wL4 = keyinit[len(keyinit) - 16: len(keyinit) - 12]
+            newline = miniXor(newline, wL4)
+            print("line:")
+            printLine(newline)
+            keyinit += newline
+
+    print(len(keyinit))
 
 
 aes("hello", "key", True, True)
