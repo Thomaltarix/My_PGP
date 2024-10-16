@@ -51,38 +51,33 @@ def SubBytes(currentCol):
 def RotWord(word):
     return word[1:] + word[:1]
 
-def RCon():
-    pass
+def ShiftRows(word):
 
-#--
+    new = list(word)
+    new[1] = word[5]
+    new[5] = word[9]
+    new[9] = word[13]
+    new[13] = word[1]
+    new[2] = word[10]
+    new[6] = word[14]
+    new[10] = word[2]
+    new[14] = word[6]
+    new[3] = word[15] #
+    new[7] = word[3] #
+    new[11] = word[7] #
+    new[15] = word[11] #
 
-def ShiftRows():
-    pass
+    return new
 
 
 def MixColumns():
     pass
 
-def AddRoundKey():
-    pass
-
-def KeyExpansion():
-    pass
-
-def AddRoundKey():
-    pass
-
-def SubWord():
-    pass
-
-def ShiftRows():
-    pass
-
-def miniXor(word1,word2):
+def addRoundKey(word1,word2): #addroundkey --!!
     return [word1[i] ^ word2[i] for i in range(0, len(word1))]
 
 def printLine(line):
-    print(f"here it is : {line[0]:x} {line[0+1]:x} {line[0+2]:x} {line[0+3]:x}")
+    print(f"{line[0]:x} {line[0+1]:x} {line[0+2]:x} {line[0+3]:x}")
 
 def printTab(keymatrix):
     for i in range(0, len(keymatrix), 4):
@@ -93,15 +88,15 @@ def keyExpansion(key : List):
 
     for i in range(0,10):
         for i in range(0,4):
-            newline = key[len(key) - 4: len(key) + 1] #take previous col
+            newline = key[len(key) - 4: len(key) + 1]
             if (i == 0):
                 newline = RotWord(newline)
                 newline = SubBytes(newline)
                 rConCol = rcon[0:4]
                 rcon = rcon[4:]
-                newline = miniXor(newline, rConCol)
+                newline = addRoundKey(newline, rConCol)
             wL4 = key[len(key) - 16: len(key) - 12]
-            newline = miniXor(newline, wL4)
+            newline = addRoundKey(newline, wL4)
             key += newline
     return key
 
@@ -110,9 +105,19 @@ def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     keyinit = [
         0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
     ]
+    message = [
+        0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34
+    ]
     keyinit = keyExpansion(keyinit)
+    message = addRoundKey(message, keyinit[0:16])
 
-    print(len(keyinit))
+    message = SubBytes(message)
 
+    message = ShiftRows(message)
+
+    printTab(message)
 
 aes("hello", "key", True, True)
+
+
+#should make ta
