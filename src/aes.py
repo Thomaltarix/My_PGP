@@ -75,6 +75,26 @@ def ShiftRows(word):
 
     return new
 
+def InvShiftRows(word):
+
+    new = list(word)
+    new[1] = word[13]
+    new[5] = word[1]
+    new[9] = word[5]
+    new[13] = word[9]
+
+    new[2] = word[10]
+    new[6] = word[14]
+    new[10] = word[2]
+    new[14] = word[6]
+
+    new[3] = word[7]
+    new[7] = word[11]
+    new[11] = word[15]
+    new[15] = word[3]
+
+    return new
+
 def addRoundKey(word1,word2): #addroundkey --!!
     return [word1[i] ^ word2[i] for i in range(0, len(word1))]
 
@@ -138,14 +158,40 @@ def mixIt(message, mixFunc):
         mixFunc(line)
         message[i*4:i*4+4] = line
 
-def aes_decrypt(message, key):
+def rev_expandedkey(keyExpanded):
+    keys = [keyExpanded[i:i+16] for i in range(0, len(keyExpanded), 16)]
+    keys = keys[::-1]
+    res = []
+    for i in range(len(keys)):
+        for k in keys[i]:
+            res.append(k)
+    return res
 
-    pass
+
+def aes_decrypt(message, keyExpanded):
+    keyExpanded = rev_expandedkey(keyExpanded)
+    message = addRoundKey(message, keyExpanded[:16])
+    keyExpanded = keyExpanded[16:]
+
+    message = InvShiftRows(message)
+    message = InvSubBytes(message)
+
+    for i in range(0,9):
+        message = addRoundKey(message, keyExpanded[0:16])
+        keyExpanded = keyExpanded[16:]
+        mixIt(message, invMixColmn)
+        message = InvShiftRows(message)
+        message = InvSubBytes(message)
+
+    message = addRoundKey(message, keyExpanded[0:16])
+    keyExpanded = keyExpanded[16:]
+
+    return message
 
 
 def aes_crypt(message, keyExpanded):
 
-    message = addRoundKey(message, keyExpanded)
+    message = addRoundKey(message, keyExpanded[0:16])
     keyExpanded = keyExpanded[16:]
 
     for i in range(0, 9):
@@ -188,7 +234,5 @@ print("tab cyphered")
 printTab(message_cyphered)
 
 print("tab uncyphered")
-
-print("tab decyphered")
 message_decyphered = aes_decrypt(message_cyphered, keyExpandedSave)
 printTab(message_decyphered)
