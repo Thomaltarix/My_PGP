@@ -58,18 +58,24 @@ def swap32(content):
 
 def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     key_bytes = list(hex_to_bytes(key))
-    key_bytes = swap32(key_bytes)
-
-    message_bytes = list(hex_to_bytes(string_to_hex(message)) if encrypt else hex_to_bytes(message))
+    message_bytes = list(hex_to_bytes(string_to_hex(message)) if encrypt else list(hex_to_bytes(message)))
 
     if not block_mode and (len(message_bytes) != len(key_bytes)):
         message_bytes = pad_message(message_bytes, len(key_bytes))
 
+    if encrypt:
+        key_bytes = swap32(key_bytes)
+    else:
+        message_bytes = swap32(message_bytes) # if message not 128-bit but higher be carefull
+        key_bytes = swap32(key_bytes)
+
     keyExpanded = keyExpansion(key_bytes)
 
-    messageCyphered = aes_crypt(message_bytes, keyExpanded)
-    messageCyphered = swap32(messageCyphered)
-    return bytes_to_hex(bytes(messageCyphered))
+    message = aes_crypt(message_bytes, keyExpanded) if encrypt else aes_decrypt(message_bytes, keyExpanded)
+    if encrypt:
+        message = swap32(message)
+    # printTab(message)
+    return bytes_to_hex(bytes(message)) if encrypt else bytes(message).decode(errors='ignore')
 
     # # if encrypt:
     # #     message_bytes = little_endian(message_bytes)
