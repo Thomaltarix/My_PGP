@@ -1,4 +1,5 @@
 from ast import List
+import copy
 
 
 sbox = [
@@ -20,7 +21,7 @@ sbox = [
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 ]
 
-sboxInv = [
+invSBOX = [
         0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
         0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
         0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e,
@@ -51,6 +52,9 @@ def SubBytes(currentCol):
 def RotWord(word):
     return word[1:] + word[:1]
 
+def InvSubBytes(word):
+    return [invSBOX[i] for i in word]
+
 def ShiftRows(word):
 
     new = list(word)
@@ -58,20 +62,18 @@ def ShiftRows(word):
     new[5] = word[9]
     new[9] = word[13]
     new[13] = word[1]
+
     new[2] = word[10]
     new[6] = word[14]
     new[10] = word[2]
     new[14] = word[6]
-    new[3] = word[15] #
-    new[7] = word[3] #
-    new[11] = word[7] #
-    new[15] = word[11] #
+
+    new[3] = word[15]
+    new[7] = word[3]
+    new[11] = word[7]
+    new[15] = word[11]
 
     return new
-
-
-def MixColumns():
-    pass
 
 def addRoundKey(word1,word2): #addroundkey --!!
     return [word1[i] ^ word2[i] for i in range(0, len(word1))]
@@ -100,24 +102,81 @@ def keyExpansion(key : List):
             key += newline
     return key
 
-def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
-    global rcon
-    keyinit = [
-        0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
-    ]
-    message = [
-        0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34
-    ]
-    keyinit = keyExpansion(keyinit)
-    message = addRoundKey(message, keyinit[0:16])
+
+def gal(a, b):
+    res = 0
+    wrk = 0
+    interv = 256
+    rangeToSeek = 8
+
+    for i in range(rangeToSeek):
+        if b & 1 == 1: res = res ^ a
+        wrk = a & 0x80
+        a <<= 1
+        if wrk == 0x80: a = a ^ 0x1b
+        b >>= 1
+    return res % interv
+
+def mixColmn(colmn):
+    tmp = list(colmn)
+    colmn[0] = gal(tmp[0],2) ^ tmp[3] ^ tmp[2] ^ gal(tmp[1],3)
+    colmn[1] = gal(tmp[1],2) ^ tmp[0] ^ tmp[3] ^ gal(tmp[2],3)
+    colmn[2] = gal(tmp[2],2) ^ tmp[1] ^ tmp[0] ^ gal(tmp[3],3)
+    colmn[3] = gal(tmp[3],2) ^ tmp[2] ^ tmp[1] ^ gal(tmp[0],3)
+
+def mixIt(message):
+    for i in range(4):
+        line = message[i*4:i*4+4]
+        mixColmn(line)
+        message[i*4:i*4+4] = line
+
+def aes_decrypt(message, key):
+
+    pass
+
+
+def aes_crypt(message, keyExpanded):
+
+    message = addRoundKey(message, keyExpanded)
+    keyExpanded = keyExpanded[16:]
+
+    for i in range(0, 9):
+        message = SubBytes(message)
+
+        message = ShiftRows(message)
+
+        mixIt(message)
+
+        message = addRoundKey(message, keyExpanded[0:16])
+        keyExpanded = keyExpanded[16:]
 
     message = SubBytes(message)
-
     message = ShiftRows(message)
+    message = addRoundKey(message, keyExpanded[0:16])
+    keyExpanded = keyExpanded[16:]
 
-    printTab(message)
-
-aes("hello", "key", True, True)
+    return message
 
 
-#should make ta
+key = [
+        0x2b, 0x7e, 0x15,0x16, 0x28,0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
+    ]
+
+message = [
+        0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34
+    ]
+
+print("base message:")
+printTab(message)
+
+keyExpansion(key)
+keyExpandedSave = list(key)
+message_cyphered = aes_crypt(message, key)
+
+print("new tab")
+printTab(message_cyphered)
+
+
+# print("tab decyphered")
+# message_decyphered = aes_decrypt(message_cyphered, keyExpandedSave)
+# printTab(message_decyphered)
