@@ -80,7 +80,7 @@ class pgpArgs():
         if self.mode != "-g":
             self.KEY = sys.argv[4] if self.block_mode else sys.argv[3]
             self.check_key_encoding()
-        if self.mode == '-c' or '-d' and self.crypto_system == "rsa":
+        if (self.mode == '-c' or self.mode == '-d') and self.crypto_system == "rsa":
             try:
                 self.left, self.right = self.KEY.split("-")
                 isHex(self.left)
