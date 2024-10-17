@@ -20,6 +20,8 @@ class pgpArgs():
         self.g2 = None
         self.key_bytes = None
         self.message_bytes = None
+        self.left = None
+        self.right = None
         if not self.parseArgs():
             self.fail = True
 
@@ -78,6 +80,14 @@ class pgpArgs():
         if self.mode != "-g":
             self.KEY = sys.argv[4] if self.block_mode else sys.argv[3]
             self.check_key_encoding()
+        if self.mode == '-c' or '-d' and self.crypto_system == "rsa":
+            try:
+                self.left, self.right = self.KEY.split("-")
+                isHex(self.left)
+                isHex(self.right)
+            except:
+                print("Invalid key format.", file=sys.stderr)
+                return False
         return True
 
     def displayArgs(self):

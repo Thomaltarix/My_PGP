@@ -11,10 +11,9 @@ def isPrime(n: int) -> bool:
     return True
 
 
-def encrypt_rsa(message: str, key: str) -> str:
+def encrypt_rsa(message: str, key: str, left, right) -> str:
     message_bytes = little_endian(hex_to_bytes(string_to_hex(message)))
 
-    left, right = key.split("-")
     n = bytes_to_int(little_endian(hex_to_bytes(right)))
     e = bytes_to_int(little_endian(hex_to_bytes(left)))
 
@@ -22,20 +21,19 @@ def encrypt_rsa(message: str, key: str) -> str:
     return bytes_to_hex(little_endian(int_to_bytes(encrypted_message)))
 
 
-def decrypt_rsa(message: str, key: str) -> str:
+def decrypt_rsa(message: str, key: str, left, right) -> str:
     message_bytes = little_endian(hex_to_bytes(message))
 
-    left, right = key.split("-")
     n = bytes_to_int(little_endian(hex_to_bytes(right)))
     d = bytes_to_int(little_endian(hex_to_bytes(left)))
 
     decrypted_message = pow(bytes_to_int(message_bytes), d, n)
     return bytes_to_string(little_endian(int_to_bytes(decrypted_message)))
 
-def rsa(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
+def rsa(message: str, key: str, encrypt: bool, block_mode: bool, left, right) -> str:
     if encrypt:
-        return encrypt_rsa(message, key)
-    return decrypt_rsa(message, key)
+        return encrypt_rsa(message, key, left, right)
+    return decrypt_rsa(message, key, left, right)
 
 def getModInverse(e: int, phi: int) -> int:
     d = 0
