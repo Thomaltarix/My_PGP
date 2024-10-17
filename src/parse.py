@@ -63,6 +63,9 @@ class pgpArgs():
         if self.mode == "-g":
             self.g1 = sys.argv[3]
             self.g2 = sys.argv[4]
+            if (not isHex(self.g1) or not isHex(self.g2)):
+                print("Invalid hex string.", file=sys.stderr)
+                return False
         if self.mode == "-c" or self.mode == "-d":
             if len(sys.argv) < 4:
                 print("No key given.", file=sys.stderr)

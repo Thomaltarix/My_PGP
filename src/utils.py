@@ -36,3 +36,10 @@ def bytes_to_int(byte_data) -> int:
 
 def bytes_to_string(byte_data) -> str:
     return byte_data.decode(errors='ignore')
+
+def isHex(str):
+    try:
+        x = hex_to_int(str)
+    except:
+        return False
+    return True
