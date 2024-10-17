@@ -2,7 +2,7 @@ from ast import List
 from src.aes.utils import *
 
 def keyExpansion(key : List):
-    global rcon
+    myRcon = list(rcon)
 
     for i in range(0,10):
         for i in range(0,4):
@@ -10,8 +10,8 @@ def keyExpansion(key : List):
             if (i == 0):
                 newline = RotWord(newline)
                 newline = SubBytes(newline)
-                rConCol = rcon[0:4]
-                rcon = rcon[4:]
+                rConCol = myRcon[0:4]
+                myRcon = myRcon[4:]
                 newline = addRoundKey(newline, rConCol)
             wL4 = key[len(key) - 16: len(key) - 12]
             newline = addRoundKey(newline, wL4)

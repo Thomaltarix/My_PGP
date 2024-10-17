@@ -32,7 +32,7 @@ def stream_mode(args, algo):
         if algo == rsa:
             data = sys.stdin.read().strip()
         else:
-            data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1))
+            data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1)).strip()
         if not data:
             break
         if not args.check_message_encoding(data):
