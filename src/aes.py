@@ -124,10 +124,18 @@ def mixColmn(colmn):
     colmn[2] = gal(tmp[2],2) ^ tmp[1] ^ tmp[0] ^ gal(tmp[3],3)
     colmn[3] = gal(tmp[3],2) ^ tmp[2] ^ tmp[1] ^ gal(tmp[0],3)
 
-def mixIt(message):
+def invMixColmn(colmn): #tmp
+    tmp = list(colmn)
+    colmn[0] = gal(tmp[0], 14) ^ gal(tmp[3], 9) ^ gal(tmp[2], 13) ^ gal(tmp[1], 11)
+    colmn[1] = gal(tmp[1], 14) ^ gal(tmp[0], 9) ^ gal(tmp[3], 13) ^ gal(tmp[2], 11)
+    colmn[2] = gal(tmp[2], 14) ^ gal(tmp[1], 9) ^ gal(tmp[0], 13) ^ gal(tmp[3], 11)
+    colmn[3] = gal(tmp[3], 14) ^ gal(tmp[2], 9) ^ gal(tmp[1], 13) ^ gal(tmp[0], 11)
+
+
+def mixIt(message, mixFunc):
     for i in range(4):
         line = message[i*4:i*4+4]
-        mixColmn(line)
+        mixFunc(line)
         message[i*4:i*4+4] = line
 
 def aes_decrypt(message, key):
@@ -145,7 +153,7 @@ def aes_crypt(message, keyExpanded):
 
         message = ShiftRows(message)
 
-        mixIt(message)
+        mixIt(message, mixColmn)
 
         message = addRoundKey(message, keyExpanded[0:16])
         keyExpanded = keyExpanded[16:]
@@ -166,17 +174,21 @@ message = [
         0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34
     ]
 
-print("base message:")
-printTab(message)
+
 
 keyExpansion(key)
 keyExpandedSave = list(key)
+
+print("tab natural")
+printTab(message)
+
 message_cyphered = aes_crypt(message, key)
 
-print("new tab")
+print("tab cyphered")
 printTab(message_cyphered)
 
+print("tab uncyphered")
 
-# print("tab decyphered")
-# message_decyphered = aes_decrypt(message_cyphered, keyExpandedSave)
-# printTab(message_decyphered)
+print("tab decyphered")
+message_decyphered = aes_decrypt(message_cyphered, keyExpandedSave)
+printTab(message_decyphered)
