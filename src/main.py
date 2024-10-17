@@ -11,6 +11,7 @@ from src.parse import pgpArgs
 from src.xor import xor
 from src.rsa import rsa
 from src.utils import *
+from src.aes.aes import *
 import sys
 
 def block_mode(args, algo):
@@ -28,7 +29,10 @@ def block_mode(args, algo):
 
 def stream_mode(args, algo):
     while True:
-        data = sys.stdin.read().strip()
+        if algo == rsa:
+            data = sys.stdin.read().strip()
+        else:
+            data = sys.stdin.read(len(hex_to_bytes(args.KEY)) * (2 if args.mode == "-d" else 1)).strip()
         if not data:
             break
         if not args.check_message_encoding(data):
@@ -47,6 +51,8 @@ def main():
         algo = xor
     elif args.crypto_system == "rsa":
         algo = rsa
+    elif args.crypto_system == "aes":
+        algo = aes
     else:
         algo = None
 

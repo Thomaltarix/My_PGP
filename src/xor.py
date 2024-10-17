@@ -13,12 +13,6 @@ def xor_encrypt_decrypt(message, key) -> bytes:
         result += bytes([message[i] ^ key_repeated[i]])
     return result
 
-def pad_message(message, block_size) -> bytes:
-    padding_needed = block_size - (len(message) % block_size)
-    if padding_needed != block_size:
-        message += b'\x00' * padding_needed
-    return message
-
 def xor(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     key_bytes = hex_to_bytes(key)
 
