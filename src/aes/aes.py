@@ -66,7 +66,7 @@ def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     if encrypt:
         key_bytes = swap32(key_bytes)
     else:
-        message_bytes = swap32(message_bytes) # if message not 128-bit but higher be carefull
+        message_bytes = swap32(message_bytes)
         key_bytes = swap32(key_bytes)
 
     keyExpanded = keyExpansion(key_bytes)
@@ -74,21 +74,4 @@ def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
     message = aes_crypt(message_bytes, keyExpanded) if encrypt else aes_decrypt(message_bytes, keyExpanded)
     if encrypt:
         message = swap32(message)
-    # printTab(message)
     return bytes_to_hex(bytes(message)) if encrypt else bytes(message).decode(errors='ignore')
-
-    # # if encrypt:
-    # #     message_bytes = little_endian(message_bytes)
-
-
-
-    # result_bytes = xor_encrypt_decrypt(message_bytes, key_bytes)
-
-    # # if not encrypt:
-    # #     result_bytes = little_endian(result_bytes)
-    # return bytes_to_hex(result_bytes) if encrypt else result_bytes.decode(errors='ignore').rstrip('\x00')
-
-
-
-
-#und, plug, rev. optiEstheALL
