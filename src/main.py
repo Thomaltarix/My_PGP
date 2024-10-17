@@ -24,7 +24,7 @@ def block_mode(args, algo):
         print("Block mode enabled. Key length must == message length.", file=sys.stderr)
         return 84
     else:
-        print(algo(message, args.KEY, args.mode == '-c', args.block_mode))
+        print(algo(message, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
     return 0
 
 def stream_mode(args, algo):
@@ -38,7 +38,7 @@ def stream_mode(args, algo):
         if not args.check_message_encoding(data):
             print("Invalid message encoding.", file=sys.stderr)
             return 84
-        print(algo(data, args.KEY, args.mode == '-c', args.block_mode))
+        print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
     return 0
 
 def main():
