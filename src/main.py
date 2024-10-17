@@ -9,7 +9,7 @@ import src.rsa
 from src.help import display_help
 from src.parse import pgpArgs
 from src.xor import xor
-from src.aes import aes
+from src.aes.aes import *
 from src.utils import *
 import sys
 

@@ -1,6 +1,11 @@
 #!/usr/bin/python3
 import binascii
 
+def pad_message(message, block_size) -> bytes:
+    padding_needed = block_size - (len(message) % block_size)
+    if padding_needed != block_size:
+        message += b'\x00' * padding_needed
+    return message
 
 def hex_to_string(hex_str) -> str:
     return bytes.fromhex(hex_str).decode(errors='ignore')
