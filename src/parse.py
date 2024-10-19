@@ -35,7 +35,7 @@ class pgpArgs():
 
     def check_key_encoding(self):
         try:
-            if not self.crypto_system == "rsa" and not self.crypto_system == "pgp-xor":
+            if not self.crypto_system == "rsa" and not self.crypto_system == "pgp-xor" and not self.crypto_system == "pgp-aes":
                 self.key_bytes = hex_to_bytes(self.KEY)
             else:
                 self.key_bytes = self.KEY
