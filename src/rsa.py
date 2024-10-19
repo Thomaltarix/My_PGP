@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from src.utils import *
-from random import randint
 from math import gcd
 
 def isPrime(n: int) -> bool:
@@ -9,7 +8,6 @@ def isPrime(n: int) -> bool:
         if n % i == 0:
             return False
     return True
-
 
 def encrypt_rsa(message: str, key: str, left, right) -> str:
     message_bytes = little_endian(hex_to_bytes(string_to_hex(message)))
@@ -42,12 +40,12 @@ def getModInverse(e: int, phi: int) -> int:
     y1 = 1
     temp_phi = phi
 
-    while e > 0:
-        temp1 = temp_phi // e
-        temp2 = temp_phi - temp1 * e
-        temp_phi = e
-        e = temp2
-
+def getMaxFermatPrimeNumber(phi: int) -> int:
+    fermat_primes = [3, 5, 17, 257, 65537]
+    for prime in fermat_primes[::-1]:
+        if phi > prime > 1 == gcd(prime, phi):
+            return prime
+    return 0
         x = x2 - temp1 * x1
         y = d - temp1 * y1
 
@@ -65,11 +63,11 @@ def generateKeys(p: str, q:str):
     p = hex_to_int(p)
     q = hex_to_int(q)
 
-    n = p * q
-    phi = (p - 1) * (q - 1)
-    e = 65737
-    while gcd(e, phi) != 1:
-        e = randint(2, phi - 1)
+    n = new_p * new_q
+    phi = (new_p - 1) * (new_q - 1)
+    e = getMaxFermatPrimeNumber(phi)
+    if gcd(e, phi) != 1 or e == 0:
+        return "Error: e and phi aren't coprime, choose different p and q."
 
     d = getModInverse(e, phi)
     n_little_endian = little_endian(int_to_bytes(n))
