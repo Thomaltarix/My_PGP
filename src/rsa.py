@@ -60,8 +60,8 @@ def getMaxFermatPrimeNumber(phi: int) -> int:
 def generateKeys(p: str, q:str):
     if not p or not q:
         return "p and q must be provided."
-    p = hex_to_int(p)
-    q = hex_to_int(q)
+    new_p = bytes_to_int(little_endian(hex_to_bytes(p)))
+    new_q = bytes_to_int(little_endian(hex_to_bytes(q)))
 
     n = new_p * new_q
     phi = (new_p - 1) * (new_q - 1)
