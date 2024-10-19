@@ -35,7 +35,7 @@ class pgpArgs():
 
     def check_key_encoding(self):
         try:
-            if not self.crypto_system == "rsa":
+            if not self.crypto_system == "rsa" and not self.crypto_system == "pgp-xor":
                 self.key_bytes = hex_to_bytes(self.KEY)
             else:
                 self.key_bytes = self.KEY
@@ -65,7 +65,7 @@ class pgpArgs():
         if self.mode == "-g":
             self.g1 = sys.argv[3]
             self.g2 = sys.argv[4]
-            if (not isHex(self.g1) or not isHex(self.g2)):
+            if not isHex(self.g1) or not isHex(self.g2):
                 print("Invalid hex string.", file=sys.stderr)
                 return False
         if self.mode == "-c" or self.mode == "-d":
@@ -88,7 +88,7 @@ class pgpArgs():
             except:
                 print("Invalid key format.", file=sys.stderr)
                 return False
-        if (self.crypto_system == "aes" and len(self.KEY) != 32):
+        if self.crypto_system == "aes" and len(self.KEY) != 32:
             print("Invalid key length.", file=sys.stderr)
             return False
         return True
