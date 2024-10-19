@@ -33,12 +33,18 @@ def rsa(message: str, key: str, encrypt: bool, block_mode: bool, left, right) ->
         return encrypt_rsa(message, key, left, right)
     return decrypt_rsa(message, key, left, right)
 
+def ext_gdc(a: int, b: int):
+    if a == 0:
+        return b, 0, 1
+    gdc, x, y = ext_gdc(b % a, a)
+    return gdc, y - (b // a) * x, x
+
 def getModInverse(e: int, phi: int) -> int:
-    d = 0
-    x1 = 0
-    x2 = 1
-    y1 = 1
-    temp_phi = phi
+    gdc, x, y = ext_gdc(e, phi)
+    if gdc != 1:
+        print("Error: e and phi aren't coprime, choose different p and q.")
+        exit(84)
+    return x % phi
 
 def getMaxFermatPrimeNumber(phi: int) -> int:
     fermat_primes = [3, 5, 17, 257, 65537]
@@ -46,16 +52,6 @@ def getMaxFermatPrimeNumber(phi: int) -> int:
         if phi > prime > 1 == gcd(prime, phi):
             return prime
     return 0
-        x = x2 - temp1 * x1
-        y = d - temp1 * y1
-
-        x2 = x1
-        x1 = x
-        d = y1
-        y1 = y
-
-    if temp_phi == 1:
-        return d + phi
 
 def generateKeys(p: str, q:str):
     if not p or not q:
