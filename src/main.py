@@ -13,11 +13,12 @@ from src.rsa import rsa
 from src.pgp_xor import pgp_xor
 from src.utils import *
 from src.aes.aes import *
+from src.pgp_aes import pgp_aes
 import sys
 
 def block_mode(args, algo):
     key = args.KEY
-    if algo == pgp_xor:
+    if algo == pgp_xor or algo == pgp_aes:
         key = args.KEY.split(":")[0]
     message = sys.stdin.read(len(hex_to_bytes(key)) * (2 if args.mode == "-d" else 1)).strip()
     if not args.check_message_encoding(message):
@@ -25,11 +26,11 @@ def block_mode(args, algo):
         return 84
     message_bytes = hex_to_bytes(string_to_hex(message)) if (args.mode == "-c") else hex_to_bytes(message)
 
-    if len(message_bytes) != len(hex_to_bytes(key)) and not args.crypto_system == "pgp-xor":
+    if len(message_bytes) != len(hex_to_bytes(key)) and not args.crypto_system == "pgp-xor" and not args.crypto_system == "pgp-aes":
         print("Block mode enabled. Key length must == message length.", file=sys.stderr)
         return 84
     else:
-        if args.crypto_system == "pgp-xor":
+        if args.crypto_system == "pgp-xor" or args.crypto_system == "pgp-aes":
             print(algo(message, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
         else:
             print(algo(message, key, args.mode == '-c', args.block_mode, args.left, args.right))
@@ -66,6 +67,8 @@ def main():
         algo = aes
     elif args.crypto_system == "pgp-xor":
         algo = pgp_xor
+    elif args.crypto_system == "pgp-aes":
+        algo = pgp_aes
     else:
         algo = None
     if algo is None:
