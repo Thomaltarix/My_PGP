@@ -88,6 +88,9 @@ class pgpArgs():
             except:
                 print("Invalid key format.", file=sys.stderr)
                 return False
+        if (self.crypto_system == "aes" and len(self.KEY) != 32):
+            print("Invalid key length.", file=sys.stderr)
+            return False
         return True
 
     def displayArgs(self):
