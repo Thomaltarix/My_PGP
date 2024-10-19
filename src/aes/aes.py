@@ -56,7 +56,7 @@ def swap32(content):
         content[i:i+4] = line[::-1]
     return content
 
-def aes(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
+def aes(message: str, key: str, encrypt: bool, block_mode: bool, left, right) -> str:
     key_bytes = list(hex_to_bytes(key))
     message_bytes = list(hex_to_bytes(string_to_hex(message)) if encrypt else list(hex_to_bytes(message)))
 

@@ -13,7 +13,7 @@ def xor_encrypt_decrypt(message, key) -> bytes:
         result += bytes([message[i] ^ key_repeated[i]])
     return result
 
-def xor(message: str, key: str, encrypt: bool, block_mode: bool) -> str:
+def xor(message: str, key: str, encrypt: bool, block_mode: bool, left, right) -> str:
     key_bytes = hex_to_bytes(key)
 
     message_bytes = hex_to_bytes(string_to_hex(message)) if encrypt else hex_to_bytes(message)
