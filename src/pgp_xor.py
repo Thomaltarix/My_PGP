@@ -15,7 +15,7 @@ def encrypt_pgp_xor(message, key, block_mode, left, right) -> str:
         xor_key, rsa_key = key.split(":")
         new_left, new_right = rsa_key.split("-")
         encrypted_message = xor(message, xor_key, True, block_mode, "", "")
-        encrypted_key = rsa(xor_key, rsa_key, True, block_mode, new_left, new_right)
+        encrypted_key = rsa(hex_to_string(xor_key), rsa_key, True, block_mode, new_left, new_right)
     except Exception as e:
         print(e)
         exit(84)
@@ -26,7 +26,7 @@ def decrypt_pgp_xor(message, key, block_mode, left, right) -> str:
         xor_key, rsa_key  = key.split(":")
         new_left, new_right = rsa_key.split("-")
         decrypted_key = rsa(xor_key, rsa_key, False, block_mode, new_left, new_right).split("\n")[0]
-        decrypted_message = xor(message, decrypted_key, False, block_mode, "", "")
+        decrypted_message = xor(message, string_to_hex(decrypted_key), False, block_mode, "", "")
     except Exception as e:
         print(e)
         exit(84)
