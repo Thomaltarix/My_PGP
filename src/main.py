@@ -17,40 +17,48 @@ from src.pgp_aes import pgp_aes
 import sys
 
 def block_mode(args, algo):
-    key = args.KEY
-    if algo == pgp_xor or algo == pgp_aes:
-        key = args.KEY.split(":")[0]
-    message = sys.stdin.read(len(hex_to_bytes(key)) * (2 if args.mode == "-d" else 1)).strip()
-    if not args.check_message_encoding(message):
-        print("Invalid message encoding.", file=sys.stderr)
-        return 84
-    message_bytes = hex_to_bytes(string_to_hex(message)) if (args.mode == "-c") else hex_to_bytes(message)
+    try:
+        key = args.KEY
+        if algo == pgp_xor or algo == pgp_aes:
+            key = args.KEY.split(":")[0]
+        message = sys.stdin.read(len(hex_to_bytes(key)) * (2 if args.mode == "-d" else 1)).strip()
+        if not args.check_message_encoding(message):
+            print("Invalid message encoding.", file=sys.stderr)
+            return 84
+        message_bytes = hex_to_bytes(string_to_hex(message)) if (args.mode == "-c") else hex_to_bytes(message)
 
-    if len(message_bytes) != len(hex_to_bytes(key)) and not args.crypto_system == "pgp-xor" and not args.crypto_system == "pgp-aes":
-        print("Block mode enabled. Key length must == message length.", file=sys.stderr)
-        return 84
-    else:
-        if args.crypto_system == "pgp-xor" or args.crypto_system == "pgp-aes":
-            print(algo(message, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
+        if len(message_bytes) != len(hex_to_bytes(key)) and not args.crypto_system == "pgp-xor" and not args.crypto_system == "pgp-aes":
+            print("Block mode enabled. Key length must == message length.", file=sys.stderr)
+            return 84
         else:
-            print(algo(message, key, args.mode == '-c', args.block_mode, args.left, args.right))
+            if args.crypto_system == "pgp-xor" or args.crypto_system == "pgp-aes":
+                print(algo(message, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
+            else:
+                print(algo(message, key, args.mode == '-c', args.block_mode, args.left, args.right))
+    except Exception as e:
+        print(e)
+        return 84
     return 0
 
 def stream_mode(args, algo):
-    while True:
-        key = args.KEY
-        if algo == rsa:
-            data = sys.stdin.read().strip()
-        else:
-            if algo == pgp_xor:
-                key = args.KEY.split(":")[0]
-            data = sys.stdin.read(len(hex_to_bytes(key)) * (2 if args.mode == "-d" else 1)).strip()
-        if not data:
-            break
-        if not args.check_message_encoding(data):
-            print("Invalid message encoding.", file=sys.stderr)
-            return 84
-        print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
+    try:
+        while True:
+            key = args.KEY
+            if algo == rsa:
+                data = sys.stdin.read().strip()
+            else:
+                if algo == pgp_xor:
+                    key = args.KEY.split(":")[0]
+                data = sys.stdin.read(len(hex_to_bytes(key)) * (2 if args.mode == "-d" else 1)).strip()
+            if not data:
+                break
+            if not args.check_message_encoding(data):
+                print("Invalid message encoding.", file=sys.stderr)
+                return 84
+            print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
+    except Exception as e:
+        print(e)
+        return 84
     return 0
 
 def main():
