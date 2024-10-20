@@ -14,7 +14,7 @@ def encrypt_pgp_aes(message, key, block_mode, left, right) -> str:
     try:
         aes_key, rsa_key = key.split(":")
         new_left, new_right = rsa_key.split("-")
-        encrypted_key = rsa(aes_key, rsa_key, True, False, new_left, new_right)
+        encrypted_key = rsa(hex_to_string(aes_key), rsa_key, True, False, new_left, new_right)
         encrypted_message = aes(message, aes_key, True, block_mode, "", "")
     except Exception as e:
         print(e)
