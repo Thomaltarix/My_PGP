@@ -55,7 +55,10 @@ def stream_mode(args, algo):
             if not args.check_message_encoding(data):
                 print("Invalid message encoding.", file=sys.stderr)
                 return 84
-            print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
+            if (algo == aes):
+                print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right), end="")
+            else:
+                print(algo(data, args.KEY, args.mode == '-c', args.block_mode, args.left, args.right))
     except Exception as e:
         print(e)
         return 84
